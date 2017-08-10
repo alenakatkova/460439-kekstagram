@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Алёна Колпакова](https://up.htmlacademy.ru/javascript/10/user/460439).
-* Наставник: `Неизвестно`.
+* Наставник: `Егор Огарков`.
 
 ---
 
