@@ -30,7 +30,7 @@ var picturesList = document.querySelector('.pictures');
 var fragment = document.createDocumentFragment();
 
 for (var k = 0; k < pictures.length; k++) {
-  var pictureItem = template.cloneNode(true)
+  var pictureItem = template.cloneNode(true);
   pictureItem.querySelector('img').src = pictures[k].url;
   pictureItem.querySelector('.picture-comments').textContent = pictures[k].comments.length;
   pictureItem.querySelector('.picture-likes').textContent = pictures[k].likes;
