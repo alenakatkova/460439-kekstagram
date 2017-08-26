@@ -89,7 +89,7 @@ function openGalleryOverlay(imageURL, pictureNumberInArray) {
 
 function closeGalleryOverlay() {
   galleryOverlay.classList.add('hidden');
-  document.removeEventListener('keydown', onOpenGalleryOverlayPressEsc)
+  document.removeEventListener('keydown', onOpenGalleryOverlayPressEsc);
 }
 
 function addEventListeners() {
@@ -102,7 +102,7 @@ function addEventListeners() {
       evt.preventDefault();
       var currentPicture = evt.currentTarget.querySelector('img');
       openGalleryOverlay(currentPicture.getAttribute('src'),
-        currentPicture.getAttribute('data-number-in-array'));
+          currentPicture.getAttribute('data-number-in-array'));
     });
   }
   /*
