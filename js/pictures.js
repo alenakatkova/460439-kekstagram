@@ -6,6 +6,7 @@ var KEYCODES = {
   ESC: 27
 };
 var galleryOverlay = document.querySelector('.gallery-overlay');
+var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 
 function generateRandomInteger(min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -66,7 +67,13 @@ function renderPictures() {
 }
 
 function onOpenGalleryOverlayPressEsc(evt) {
-  if (evt.keyCode === 27) {
+  if (evt.keyCode === KEYCODES.ESC) {
+    galleryOverlay.classList.add('hidden');
+  }
+}
+
+function onGalleryOverlayClosePressEnter(evt) {
+  if (evt.keyCode === KEYCODES.ENTER) {
     galleryOverlay.classList.add('hidden');
   }
 }
@@ -85,11 +92,13 @@ function openGalleryOverlay(imageURL, pictureNumberInArray) {
    * allow to use ESC to close gallery overlay
    */
   document.addEventListener('keydown', onOpenGalleryOverlayPressEsc);
+  galleryOverlayClose.addEventListener('keydown', onGalleryOverlayClosePressEnter);
 }
 
 function closeGalleryOverlay() {
   galleryOverlay.classList.add('hidden');
   document.removeEventListener('keydown', onOpenGalleryOverlayPressEsc);
+  galleryOverlayClose.removeEventListener('keydown', onGalleryOverlayClosePressEnter);
 }
 
 function addEventListeners() {
@@ -108,14 +117,7 @@ function addEventListeners() {
   /*
    * closing gallery overlay
    */
-  var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
   galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
-
-  galleryOverlayClose.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === KEYCODES.ENTER) {
-      closeGalleryOverlay();
-    }
-  });
 }
 
 document.querySelector('.upload-overlay').classList.add('hidden');
