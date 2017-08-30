@@ -17,11 +17,11 @@ function getPictureUrl(index) {
 }
 
 function returnUnique(arr) {
-    var obj = new Object;
-    for (var i = 0; i < arr.length; i++) {
-      obj[arr[i]] = '';
-    }
-    return Object.keys(obj).length;
+  var obj = {};
+  for (var i = 0; i < arr.length; i++) {
+    obj[arr[i]] = '';
+  }
+  return Object.keys(obj).length;
 }
 
 /*
@@ -146,8 +146,6 @@ var scalingStep = +scale.getAttribute('step').slice(0, -1);
 var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
 var previewClasses = effectImagePreview.classList;
 
-var submit = uploadForm.querySelector('.upload-form-submit');
-
 // function opens upload overlay, adds event listeners
 
 function openUploadOverlay() {
@@ -219,7 +217,7 @@ function onZoomInClick() {
   if (scaleValue < maxScale) {
     scaleValue += scalingStep;
     scale.value = scaleValue + '%';
-    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 +')';
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
   }
 }
 
@@ -232,7 +230,7 @@ function onZoomOutClick() {
   if (scaleValue > minScale) {
     scaleValue -= scalingStep;
     scale.value = scaleValue + '%';
-    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 +')';
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
   }
 }
 
@@ -348,6 +346,7 @@ function validateForm(evt) {
   }
 }
 
+/*
 function setDefaultValues() {
   hashtagInput.value = '';
   commentInput.value = '';
@@ -355,3 +354,4 @@ function setDefaultValues() {
   previewClasses = 'effect-image-preview';
   fileInput = '';
 }
+*/
