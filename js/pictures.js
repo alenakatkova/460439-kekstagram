@@ -16,6 +16,14 @@ function getPictureUrl(index) {
   return 'photos/' + index + '.jpg';
 }
 
+function returnUnique(arr) {
+    var obj = new Object;
+    for (var i = 0; i < arr.length; i++) {
+      obj[arr[i]] = '';
+    }
+    return Object.keys(obj).length;
+}
+
 /*
  * function generates an array with objects
  * each object is a data set that describes specific picture in the gallery
@@ -47,9 +55,7 @@ function generatePicturesDataSets(amountOfDataSets) {
   }
 }
 
-/*
- * function renders pictures using generated data sets
- */
+// function renders pictures using generated data sets
 
 function renderPictures() {
   var template = document.querySelector('#picture-template').content.querySelector('.picture');
@@ -78,9 +84,7 @@ function onGalleryOverlayClosePressEnter(evt) {
   }
 }
 
-/*
- * function adds specific picture's data set to the opened picture
- */
+// function adds specific picture's data set to the opened picture
 
 function openGalleryOverlay(imageURL, pictureNumberInArray) {
   galleryOverlay.classList.remove('hidden');
@@ -88,10 +92,9 @@ function openGalleryOverlay(imageURL, pictureNumberInArray) {
   preview.querySelector('.gallery-overlay-image').src = imageURL;
   preview.querySelector('.comments-count').textContent = picturesDataSets[pictureNumberInArray].comments.length;
   preview.querySelector('.likes-count').textContent = picturesDataSets[pictureNumberInArray].likes;
-  /*
-   * allow to use ESC to close gallery overlay
-   */
+  // allow to use ESC to close gallery overlay
   document.addEventListener('keydown', onOpenGalleryOverlayPressEsc);
+  // allow to use ENTER to close gallery overlay when focused on cross button
   galleryOverlayClose.addEventListener('keydown', onGalleryOverlayClosePressEnter);
 }
 
@@ -102,9 +105,7 @@ function closeGalleryOverlay() {
 }
 
 function addEventListeners() {
-  /*
-   * opening gallery overlay
-   */
+  // opening gallery overlay
   var allPictures = document.querySelectorAll('.picture');
   for (var i = 0; i < allPictures.length; i++) {
     allPictures[i].addEventListener('click', function (evt) {
@@ -114,9 +115,7 @@ function addEventListeners() {
           currentPicture.getAttribute('data-number-in-array'));
     });
   }
-  /*
-   * closing gallery overlay
-   */
+   // closing gallery overlay
   galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
 }
 
@@ -125,3 +124,234 @@ document.querySelector('.upload-overlay').classList.add('hidden');
 generatePicturesDataSets(25);
 renderPictures();
 addEventListeners();
+
+var uploadForm = document.querySelector('#upload-select-image');
+var fileInput = uploadForm.querySelector('#upload-file');
+
+var uploadOverlay = document.querySelector('.upload-overlay');
+var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
+var commentInput = uploadForm.querySelector('.upload-form-description');
+var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
+var effectControl = uploadForm.querySelector('.upload-effect-controls');
+
+var zoomOut = uploadForm.querySelector('.upload-resize-controls-button-dec');
+var zoomIn = uploadForm.querySelector('.upload-resize-controls-button-inc');
+var scale = uploadForm.querySelector('.upload-resize-controls-value');
+
+var scaleValue = +scale.getAttribute('value').slice(0, -1);
+var maxScale = +scale.getAttribute('max').slice(0, -1);
+var minScale = +scale.getAttribute('min').slice(0, -1);
+var scalingStep = +scale.getAttribute('step').slice(0, -1);
+
+var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
+var previewClasses = effectImagePreview.classList;
+
+var submit = uploadForm.querySelector('.upload-form-submit');
+
+// function opens upload overlay, adds event listeners
+
+function openUploadOverlay() {
+  // opening upload overlay
+  uploadOverlay.classList.remove('hidden');
+  // adding event listeners
+  document.addEventListener('keydown', onOpenResizePressEsc);
+  uploadForm.addEventListener('input', validateForm);
+  uploadFormCancel.addEventListener('click', closeUploadOverlay);
+  effectControl.addEventListener('click', onEffectControlClick);
+  zoomOut.addEventListener('click', onZoomOutClick);
+  zoomIn.addEventListener('click', onZoomInClick);
+}
+
+
+// automatic opening of upload overlay when image file is chosen
+
+fileInput.addEventListener('change', openUploadOverlay);
+
+/*
+ * function closes upload overlay,
+     removes event listeners added when upload overlay was open,
+     opens back file selecting form
+ */
+
+function closeUploadOverlay() {
+  // closing upload overlay
+  uploadOverlay.classList.add('hidden');
+  // removing keydown event listener
+  document.removeEventListener('keydown', onOpenResizePressEsc);
+  // opening file selecting form
+  fileInput.click();
+}
+
+/*
+ * function allows to use ESC to close upload overlay
+ * exception: when comment input is focused, ESC doesn't work
+ */
+
+function onOpenResizePressEsc(evt) {
+  if (evt.target !== commentInput && evt.keyCode === KEYCODES.ESC) {
+    closeUploadOverlay();
+  }
+}
+
+/*
+ * function allows to change photo effect by choosing one of the effects listed in input[type="radio"],
+     it adds chosen effect's class to the photo preview
+     and deletes it when another effect is chosen
+ */
+
+function onEffectControlClick(evt) {
+  var target = evt.target;
+  if (target.name === 'effect') {
+    var effectClass = target.getAttribute('id').slice(7);
+    if (previewClasses.length > 1) {
+      previewClasses.remove(previewClasses[1]);
+    }
+    previewClasses.add(effectClass);
+  }
+}
+
+/*
+ * function increases photo's scale when it is under 100%
+     by adding 0.25 to the value of transform: scale attribute
+ */
+
+function onZoomInClick() {
+  if (scaleValue < maxScale) {
+    scaleValue += scalingStep;
+    scale.value = scaleValue + '%';
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 +')';
+  }
+}
+
+/*
+ * function decreases photo's scale when it is more than 25%
+     by substracting 0.25 from the value of transform: scale attribute
+ */
+
+function onZoomOutClick() {
+  if (scaleValue > minScale) {
+    scaleValue -= scalingStep;
+    scale.value = scaleValue + '%';
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 +')';
+  }
+}
+
+// function sets rules and error messages for hashtags input
+
+function validateHashtagInput() {
+  var hashtags = hashtagInput.value.split(' ');
+
+  var maxHashtagLength = 20;
+  var maxAmountOfHashtags = 5;
+
+  var hashtagInvalidities = {
+    isHashMissing: function () {
+      for (var i = 0; i < hashtags.length; i++) {
+        if (hashtags[i][0] !== '#') {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    isSpaceMissing: function () {
+      for (var i = 0; i < hashtags.length; i++) {
+        if (hashtags[i].indexOf('#', 1) !== -1) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    isWordMissing: function () {
+      for (var i = 0; i < hashtags.length; i++) {
+        if (hashtags[i].length === 1 && hashtags[i][0] === '#') {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    isHashtagRepeated: function () {
+      return returnUnique(hashtags) < hashtags.length;
+    },
+
+    isHashtagTooLong: function () {
+      for (var i = 0; i < hashtags.length; i++) {
+        if (hashtags[i].length > maxHashtagLength) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    isAmountOfHashtagsTooBig: function () {
+      return hashtags.length > maxAmountOfHashtags;
+    }
+  };
+
+  if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
+    hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
+  } else if (hashtagInvalidities.isHashMissing()) {
+    hashtagInput.setCustomValidity('Each hashtag should start with #');
+  } else if (hashtagInvalidities.isHashtagTooLong()) {
+    hashtagInput.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
+  } else if (hashtagInvalidities.isHashtagRepeated()) {
+    hashtagInput.setCustomValidity('Hashtags shouldn\'t be repeated');
+  } else if (hashtagInvalidities.isWordMissing()) {
+    hashtagInput.setCustomValidity('Hashtag should contain at least 1 character');
+  } else if (hashtagInvalidities.isSpaceMissing()) {
+    hashtagInput.setCustomValidity('Hashtags should be splitted by space');
+  } else {
+    hashtagInput.setCustomValidity('');
+  }
+}
+
+// function sets error messages for comment input
+
+function validateCommentInput() {
+  var minCommentLength = commentInput.getAttribute('minlength');
+  var maxCommentLength = commentInput.getAttribute('maxlength');
+  var validity = commentInput.validity;
+
+  if (validity.valueMissing) {
+    commentInput.setCustomValidity('This field is required');
+  } else if (validity.tooShort) {
+    commentInput.setCustomValidity('The comment length should be at least ' + minCommentLength + ' characters');
+  } else if (validity.tooLong) {
+    commentInput.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
+  } else {
+    commentInput.setCustomValidity('');
+  }
+}
+
+// function makes input's border red when input is invalid
+
+function indicateValidity(input) {
+  if (!input.validity.valid) {
+    input.classList.add('upload-message-error');
+  } else if (input.classList.contains('upload-message-error')) {
+    input.classList.remove('upload-message-error');
+  }
+}
+
+// function validates two inputs: hashtags and comment
+
+function validateForm(evt) {
+  var target = evt.target;
+  if (target === hashtagInput) {
+    validateHashtagInput();
+    indicateValidity(target);
+  } else if (target === commentInput) {
+    validateCommentInput();
+    indicateValidity(target);
+  }
+}
+
+function setDefaultValues() {
+  hashtagInput.value = '';
+  commentInput.value = '';
+  scale.value = '100%';
+  previewClasses = 'effect-image-preview';
+  fileInput = '';
+}
