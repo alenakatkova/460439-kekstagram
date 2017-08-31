@@ -112,10 +112,10 @@ function addEventListeners() {
       evt.preventDefault();
       var currentPicture = evt.currentTarget.querySelector('img');
       openGalleryOverlay(currentPicture.getAttribute('src'),
-          currentPicture.getAttribute('data-number-in-array'));
+        currentPicture.getAttribute('data-number-in-array'));
     });
   }
-   // closing gallery overlay
+  // closing gallery overlay
   galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
 }
 
@@ -129,6 +129,7 @@ var uploadForm = document.querySelector('#upload-select-image');
 var fileInput = uploadForm.querySelector('#upload-file');
 
 var uploadOverlay = document.querySelector('.upload-overlay');
+var submit = uploadOverlay.querySelector('#upload-submit');
 var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
 var commentInput = uploadForm.querySelector('.upload-form-description');
 var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
@@ -153,13 +154,13 @@ function openUploadOverlay() {
   uploadOverlay.classList.remove('hidden');
   // adding event listeners
   document.addEventListener('keydown', onOpenResizePressEsc);
-  uploadForm.addEventListener('input', validateForm);
+  submit.addEventListener('click', validateForm);
+  uploadForm.addEventListener('submit', submitAndReset);
   uploadFormCancel.addEventListener('click', closeUploadOverlay);
   effectControl.addEventListener('click', onEffectControlClick);
   zoomOut.addEventListener('click', onZoomOutClick);
   zoomIn.addEventListener('click', onZoomInClick);
 }
-
 
 // automatic opening of upload overlay when image file is chosen
 
@@ -237,72 +238,82 @@ function onZoomOutClick() {
 // function sets rules and error messages for hashtags input
 
 function validateHashtagInput() {
-  var hashtags = hashtagInput.value.split(' ');
+  if (hashtagInput.value.length > 0) {
+    var hashtags = hashtagInput.value.split(' ');
 
-  var maxHashtagLength = 20;
-  var maxAmountOfHashtags = 5;
+    var maxHashtagLength = 20;
+    var maxAmountOfHashtags = 5;
 
-  var hashtagInvalidities = {
-    isHashMissing: function () {
-      for (var i = 0; i < hashtags.length; i++) {
-        if (hashtags[i][0] !== '#') {
-          return true;
+    var hashtagInvalidities = {
+      isHashMissing: function () {
+        for (var i = 0; i < hashtags.length; i++) {
+          if (hashtags[i][0] !== '#') {
+            return true;
+          }
         }
-      }
-      return false;
-    },
+        return false;
+      },
 
-    isSpaceMissing: function () {
-      for (var i = 0; i < hashtags.length; i++) {
-        if (hashtags[i].indexOf('#', 1) !== -1) {
-          return true;
+      isSpaceMissing: function () {
+        for (var i = 0; i < hashtags.length; i++) {
+          if (hashtags[i].indexOf('#', 1) !== -1) {
+            return true;
+          }
         }
-      }
-      return false;
-    },
+        return false;
+      },
 
-    isWordMissing: function () {
-      for (var i = 0; i < hashtags.length; i++) {
-        if (hashtags[i].length === 1 && hashtags[i][0] === '#') {
-          return true;
+      isWordMissing: function () {
+        for (var i = 0; i < hashtags.length; i++) {
+          if (hashtags[i].length === 1 && hashtags[i][0] === '#') {
+            return true;
+          }
         }
-      }
-      return false;
-    },
+        return false;
+      },
 
-    isHashtagRepeated: function () {
-      return returnUnique(hashtags) < hashtags.length;
-    },
+      isHashtagRepeated: function () {
+        return returnUnique(hashtags) < hashtags.length;
+      },
 
-    isHashtagTooLong: function () {
-      for (var i = 0; i < hashtags.length; i++) {
-        if (hashtags[i].length > maxHashtagLength) {
-          return true;
+      isHashtagTooLong: function () {
+        for (var i = 0; i < hashtags.length; i++) {
+          if (hashtags[i].length > maxHashtagLength) {
+            return true;
+          }
         }
-      }
-      return false;
-    },
+        return false;
+      },
 
-    isAmountOfHashtagsTooBig: function () {
-      return hashtags.length > maxAmountOfHashtags;
+      isAmountOfHashtagsTooBig: function () {
+        return hashtags.length > maxAmountOfHashtags;
+      }
+    };
+
+    if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
+      hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
+      showError(hashtagInput);
+    } else if (hashtagInvalidities.isHashMissing()) {
+      hashtagInput.setCustomValidity('Each hashtag should start with #');
+      showError(hashtagInput);
+    } else if (hashtagInvalidities.isHashtagTooLong()) {
+      hashtagInput.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
+      showError(hashtagInput);
+    } else if (hashtagInvalidities.isHashtagRepeated()) {
+      hashtagInput.setCustomValidity('Hashtags shouldn\'t be repeated');
+      showError(hashtagInput);
+    } else if (hashtagInvalidities.isWordMissing()) {
+      hashtagInput.setCustomValidity('Hashtag should contain at least 1 character');
+      showError(hashtagInput);
+    } else if (hashtagInvalidities.isSpaceMissing()) {
+      hashtagInput.setCustomValidity('Hashtags should be splitted by space');
+      showError(hashtagInput);
+    } else {
+      hashtagInput.setCustomValidity('');
+      hideError(hashtagInput);
     }
-  };
-
-  if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
-    hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
-  } else if (hashtagInvalidities.isHashMissing()) {
-    hashtagInput.setCustomValidity('Each hashtag should start with #');
-  } else if (hashtagInvalidities.isHashtagTooLong()) {
-    hashtagInput.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
-  } else if (hashtagInvalidities.isHashtagRepeated()) {
-    hashtagInput.setCustomValidity('Hashtags shouldn\'t be repeated');
-  } else if (hashtagInvalidities.isWordMissing()) {
-    hashtagInput.setCustomValidity('Hashtag should contain at least 1 character');
-  } else if (hashtagInvalidities.isSpaceMissing()) {
-    hashtagInput.setCustomValidity('Hashtags should be splitted by space');
-  } else {
-    hashtagInput.setCustomValidity('');
   }
+  return hashtagInput.classList.contains('upload-message-error');
 }
 
 // function sets error messages for comment input
@@ -314,21 +325,28 @@ function validateCommentInput() {
 
   if (validity.valueMissing) {
     commentInput.setCustomValidity('This field is required');
+    showError(commentInput);
   } else if (validity.tooShort) {
     commentInput.setCustomValidity('The comment length should be at least ' + minCommentLength + ' characters');
+    showError(commentInput);
   } else if (validity.tooLong) {
     commentInput.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
+    showError(commentInput);
   } else {
     commentInput.setCustomValidity('');
+    hideError(commentInput);
   }
+  return commentInput.classList.contains('upload-message-error');
 }
 
 // function makes input's border red when input is invalid
 
-function indicateValidity(input) {
-  if (!input.validity.valid) {
-    input.classList.add('upload-message-error');
-  } else if (input.classList.contains('upload-message-error')) {
+function showError(input) {
+  input.classList.add('upload-message-error');
+}
+
+function hideError(input) {
+  if (input.classList.contains('upload-message-error')) {
     input.classList.remove('upload-message-error');
   }
 }
@@ -336,22 +354,31 @@ function indicateValidity(input) {
 // function validates two inputs: hashtags and comment
 
 function validateForm(evt) {
-  var target = evt.target;
-  if (target === hashtagInput) {
-    validateHashtagInput();
-    indicateValidity(target);
-  } else if (target === commentInput) {
+  if (evt.target === submit) {
     validateCommentInput();
-    indicateValidity(target);
+    validateHashtagInput();
   }
 }
 
-/*
-function setDefaultValues() {
+// function sets inputs' values to default
+
+function reset() {
   hashtagInput.value = '';
   commentInput.value = '';
   scale.value = '100%';
   previewClasses = 'effect-image-preview';
   fileInput = '';
 }
-*/
+
+/*
+ *function prevents sending the form if fields are filled incorrectly
+ * after sending the form inputs' values are set to default
+ */
+
+
+function submitAndReset(evt) {
+  if (validateForm()) {
+    evt.preventDefault();
+  }
+  reset();
+}
