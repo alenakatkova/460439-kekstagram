@@ -377,7 +377,7 @@ function reset() {
 
 
 function submitAndReset(evt) {
-  if (validateForm()) {
+  if (validateCommentInput() || validateHashtagInput()) {
     evt.preventDefault();
   }
   reset();
