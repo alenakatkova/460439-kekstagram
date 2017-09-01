@@ -321,10 +321,11 @@ function validateHashtagInput() {
     } else {
       hideError(hashtagInput);
     }
-    return hashtagInput.classList.contains('upload-message-error');
   } else {
     hideError(hashtagInput);
+    // return false;
   }
+  return hashtagInput.classList.contains('upload-message-error');
 }
 
 // function sets error messages for comment input
