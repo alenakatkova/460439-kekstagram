@@ -112,7 +112,7 @@ function addEventListeners() {
       evt.preventDefault();
       var currentPicture = evt.currentTarget.querySelector('img');
       openGalleryOverlay(currentPicture.getAttribute('src'),
-          currentPicture.getAttribute('data-number-in-array'));
+        currentPicture.getAttribute('data-number-in-array'));
     });
   }
   // closing gallery overlay
@@ -152,6 +152,7 @@ var previewClasses = effectImagePreview.classList;
 function openUploadOverlay() {
   // opening upload overlay
   uploadOverlay.classList.remove('hidden');
+  fileInput.classList.add('hidden');
   // adding event listeners
   document.addEventListener('keydown', onOpenResizePressEsc);
   submit.addEventListener('click', validateForm);
@@ -179,6 +180,8 @@ function closeUploadOverlay() {
   document.removeEventListener('keydown', onOpenResizePressEsc);
   // opening file selecting form
   fileInput.click();
+  // setting all inputs' values to default
+  reset();
 }
 
 /*
@@ -202,9 +205,7 @@ function onEffectControlClick(evt) {
   var target = evt.target;
   if (target.name === 'effect') {
     var effectClass = target.getAttribute('id').slice(7);
-    if (previewClasses.length > 1) {
-      previewClasses.remove(previewClasses[1]);
-    }
+    previewClasses.remove(previewClasses[1]);
     previewClasses.add(effectClass);
   }
 }
@@ -309,7 +310,6 @@ function validateHashtagInput() {
       hashtagInput.setCustomValidity('Hashtags should be splitted by space');
       showError(hashtagInput);
     } else {
-      hashtagInput.setCustomValidity('');
       hideError(hashtagInput);
     }
   }
@@ -333,7 +333,6 @@ function validateCommentInput() {
     commentInput.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
     showError(commentInput);
   } else {
-    commentInput.setCustomValidity('');
     hideError(commentInput);
   }
   return commentInput.classList.contains('upload-message-error');
@@ -346,9 +345,8 @@ function showError(input) {
 }
 
 function hideError(input) {
-  if (input.classList.contains('upload-message-error')) {
-    input.classList.remove('upload-message-error');
-  }
+  input.classList.remove('upload-message-error');
+  input.setCustomValidity('');
 }
 
 // function validates two inputs: hashtags and comment
@@ -356,7 +354,13 @@ function hideError(input) {
 function validateForm(evt) {
   if (evt.target === submit) {
     validateCommentInput();
+    commentInput.addEventListener('input', function () {
+      hideError(commentInput);
+    });
     validateHashtagInput();
+    hashtagInput.addEventListener('input', function () {
+      hideError(hashtagInput);
+    });
   }
 }
 
@@ -365,9 +369,13 @@ function validateForm(evt) {
 function reset() {
   hashtagInput.value = '';
   commentInput.value = '';
+  effectImagePreview.style.transform = 'scale(1.00)';
   scale.value = '100%';
-  previewClasses = 'effect-image-preview';
-  fileInput = '';
+  previewClasses.remove(previewClasses[1]);
+  fileInput.value = '';
+  hideError(commentInput);
+  hideError(hashtagInput);
+
 }
 
 /*
@@ -375,9 +383,8 @@ function reset() {
  * after sending the form inputs' values are set to default
  */
 
-
 function submitAndReset(evt) {
-  if (validateCommentInput() || validateHashtagInput()) {
+  if (validateForm()) {
     evt.preventDefault();
   }
   reset();
