@@ -130,7 +130,7 @@ var fileInput = uploadForm.querySelector('#upload-file');
 
 var uploadOverlay = document.querySelector('.upload-overlay');
 var submit = uploadOverlay.querySelector('#upload-submit');
-var uploadFormCancel = uploadOverlay.querySelector('.upload-form-cancel');
+var uploadFormCancel = uploadOverlay.querySelector('#upload-cancel');
 var commentInput = uploadForm.querySelector('.upload-form-description');
 var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
 var effectControl = uploadForm.querySelector('.upload-effect-controls');
@@ -153,15 +153,16 @@ function openUploadOverlay() {
   // opening upload overlay
   uploadOverlay.classList.remove('hidden');
   fileInput.classList.add('hidden');
-  // adding event listeners
   document.addEventListener('keydown', onOpenResizePressEsc);
-  submit.addEventListener('click', validateForm);
-  uploadForm.addEventListener('submit', submitAndReset);
-  uploadFormCancel.addEventListener('click', closeUploadOverlay);
-  effectControl.addEventListener('click', onEffectControlClick);
-  zoomOut.addEventListener('click', onZoomOutClick);
-  zoomIn.addEventListener('click', onZoomInClick);
 }
+
+// adding event listeners
+uploadForm.addEventListener('submit', submitAndReset);
+uploadFormCancel.addEventListener('click', closeUploadOverlay);
+effectControl.addEventListener('click', onEffectControlClick);
+zoomOut.addEventListener('click', onZoomOutClick);
+zoomIn.addEventListener('click', onZoomInClick);
+submit.addEventListener('click', validateForm);
 
 // automatic opening of upload overlay when image file is chosen
 
@@ -236,7 +237,9 @@ function onZoomOutClick() {
   }
 }
 
-// function sets rules and error messages for hashtags input
+/* function sets rules and error messages for hashtags input
+ * if input is empty, the error is hidden
+ */
 
 function validateHashtagInput() {
   if (hashtagInput.value.length > 0) {
@@ -244,6 +247,10 @@ function validateHashtagInput() {
 
     var maxHashtagLength = 20;
     var maxAmountOfHashtags = 5;
+
+    /* functions check validity of the hashtag input
+     * @return true if invalid
+     */
 
     var hashtagInvalidities = {
       isHashMissing: function () {
@@ -291,6 +298,8 @@ function validateHashtagInput() {
       }
     };
 
+    // setting error messages of invalidities
+
     if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
       hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
       showError(hashtagInput);
@@ -312,8 +321,10 @@ function validateHashtagInput() {
     } else {
       hideError(hashtagInput);
     }
+    return hashtagInput.classList.contains('upload-message-error');
+  } else {
+    hideError(hashtagInput);
   }
-  return hashtagInput.classList.contains('upload-message-error');
 }
 
 // function sets error messages for comment input
@@ -349,33 +360,33 @@ function hideError(input) {
   input.setCustomValidity('');
 }
 
-// function validates two inputs: hashtags and comment
+/*
+ * function validates two inputs: hashtags and comment
+ * event listeners 'inputs' are used to validate inputs after first validation that was performed when
+     we clicked on 'submit'
+ */
 
 function validateForm(evt) {
   if (evt.target === submit) {
     validateCommentInput();
-    commentInput.addEventListener('input', function () {
-      hideError(commentInput);
-    });
+    commentInput.addEventListener('input', validateCommentInput);
     validateHashtagInput();
-    hashtagInput.addEventListener('input', function () {
-      hideError(hashtagInput);
-    });
+    hashtagInput.addEventListener('input', validateHashtagInput);
   }
 }
 
-// function sets inputs' values to default
+// function sets form's values to default
 
 function reset() {
-  hashtagInput.value = '';
-  commentInput.value = '';
+  uploadForm.reset();
   effectImagePreview.style.transform = 'scale(1.00)';
-  scale.value = '100%';
+  scaleValue = 100;
   previewClasses.remove(previewClasses[1]);
-  fileInput.value = '';
   hideError(commentInput);
   hideError(hashtagInput);
-
+  // removing listeners prevents from auto-validating inputs when next picture is being uploaded
+  commentInput.removeEventListener('input', validateCommentInput);
+  hashtagInput.removeEventListener('input', validateHashtagInput);
 }
 
 /*
