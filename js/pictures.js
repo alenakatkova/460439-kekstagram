@@ -157,7 +157,6 @@ function openUploadOverlay() {
 }
 
 // adding event listeners
-uploadForm.addEventListener('submit', submitAndReset);
 uploadFormCancel.addEventListener('click', closeUploadOverlay);
 effectControl.addEventListener('click', onEffectControlClick);
 zoomOut.addEventListener('click', onZoomOutClick);
@@ -323,9 +322,7 @@ function validateHashtagInput() {
     }
   } else {
     hideError(hashtagInput);
-    // return false;
   }
-  return hashtagInput.classList.contains('upload-message-error');
 }
 
 // function sets error messages for comment input
@@ -347,7 +344,7 @@ function validateCommentInput() {
   } else {
     hideError(commentInput);
   }
-  return commentInput.classList.contains('upload-message-error');
+  // return commentInput.classList.contains('upload-message-error');
 }
 
 // function makes input's border red when input is invalid
@@ -388,16 +385,4 @@ function reset() {
   // removing listeners prevents from auto-validating inputs when next picture is being uploaded
   commentInput.removeEventListener('input', validateCommentInput);
   hashtagInput.removeEventListener('input', validateHashtagInput);
-}
-
-/*
- *function prevents sending the form if fields are filled incorrectly
- * after sending the form inputs' values are set to default
- */
-
-function submitAndReset(evt) {
-  if (validateForm()) {
-    evt.preventDefault();
-  }
-  reset();
 }
