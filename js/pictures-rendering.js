@@ -5,7 +5,7 @@
   var picturesList = document.querySelector('.pictures');
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < window.data.amountOfDataSets; i++) {
+  for (var i = 0; i < window.data.amountOfPictures; i++) {
     var pictureItem = template.cloneNode(true);
     pictureItem.querySelector('img').src = window.data.getURL(i);
     pictureItem.querySelector('img').setAttribute('data-number-in-array', i);
