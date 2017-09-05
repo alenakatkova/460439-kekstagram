@@ -65,12 +65,6 @@
    * exception: when comment input is focused, ESC doesn't work
    */
 
-  // function onOpenResizePressEsc (evt) {
-  //   if (evt.target !== commentInput && evt.keyCode === KEYCODES.ESC) {
-  //     closeUploadOverlay();
-  //   }
-  // }
-
   function onOpenResizePressEsc(evt) {
     if (evt.target !== commentInput) {
       window.util.isEscEvent(evt, closeUploadOverlay);
@@ -226,7 +220,6 @@
     } else {
       hideError(commentInput);
     }
-    // return commentInput.classList.contains('upload-message-error');
   }
 
 // function makes input's border red when input is invalid

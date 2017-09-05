@@ -17,10 +17,8 @@
       return picturesDataSets[index].url;
     },
 
-    amountOfDataSets: 26
+    amountOfPictures: 26
   };
-
-  // var amountOfDataSets = 26;
 
   function getPictureUrl(index) {
     return 'photos/' + index + '.jpg';
@@ -35,7 +33,7 @@
     'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
   ];
 
-  for (var i = 1; i <= window.data.amountOfDataSets; i++) {
+  for (var i = 1; i <= window.data.amountOfPictures; i++) {
     pictureDataSet = {
       url: getPictureUrl(i),
       likes: window.util.generateRandomInteger(15, 250),
