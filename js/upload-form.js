@@ -83,8 +83,102 @@
       var effectClass = target.getAttribute('id').slice(7);
       previewClasses.remove(previewClasses[1]);
       previewClasses.add(effectClass);
+      setDftEffectValues();
     }
   }
+
+  // variables for effects adjustments
+  var effectLevel = effectControl.querySelector('.upload-effect-level');
+  var effectPin = effectControl.querySelector('.upload-effect-level-pin');
+  var effectVal = effectControl.querySelector('.upload-effect-level-val');
+  var minX = 0;
+  var maxX = 455;
+  var dftX = 0.2 * maxX;
+
+  // object for checking which effect is chosen
+  var effects = {
+    isNothingChosen: function () {
+      return (previewClasses.length === 1 || previewClasses.contains('effect-none'));
+    },
+    isChromeChosen: function () {
+      return (previewClasses.contains('effect-chrome'));
+    },
+    isSepiaChosen: function () {
+      return (previewClasses.contains('effect-sepia'));
+    },
+    isMarvinChosen: function () {
+      return (previewClasses.contains('effect-marvin'));
+    },
+    isPhobosChosen: function () {
+      return (previewClasses.contains('effect-phobos'));
+    },
+    isHeatChosen: function () {
+      return (previewClasses.contains('effect-heat'));
+    }
+  };
+
+  function setDftEffectValues() {
+    if (effects.isNothingChosen()) {
+      effectLevel.classList.add('hidden');
+    } else {
+      effectLevel.classList.remove('hidden');
+    }
+    effectPin.style.left = '20%';
+    effectVal.style.width = '20%';
+    setEffectIntensity(dftX);
+  }
+
+  function setEffectIntensity(currentX) {
+    if (effects.isNothingChosen()) {
+      effectImagePreview.style.filter = 'none';
+    } else if (effects.isChromeChosen()) {
+      effectImagePreview.style.filter = 'grayscale(' + currentX / maxX + ')';
+    } else if (effects.isSepiaChosen()) {
+      effectImagePreview.style.filter = 'sepia(' + currentX / maxX + ')';
+    } else if (effects.isMarvinChosen()) {
+      effectImagePreview.style.filter = 'invert(' + currentX / maxX * 100 + '%)';
+    } else if (effects.isPhobosChosen()) {
+      effectImagePreview.style.filter = 'blur(' + currentX / maxX * 3 + 'px)';
+    } else if (effects.isHeatChosen()) {
+      effectImagePreview.style.filter = 'brightness(' + currentX / maxX * 3 + ')';
+    }
+  }
+
+  // allow to use pin to adjust filter intensity
+  effectPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startX = evt.clientX;
+
+    function onMouseMove(moveEvt) {
+      moveEvt.preventDefault();
+
+      var shiftX = startX - moveEvt.clientX;
+      startX = moveEvt.clientX;
+      var offset = effectPin.offsetLeft - shiftX;
+
+      if (offset < minX) {
+        effectPin.style.left = minX + 'px';
+        effectVal.style.width = minX + 'px';
+      } else if (offset > maxX) {
+        effectPin.style.left = maxX + 'px';
+        effectVal.style.width = maxX + 'px';
+      } else {
+        effectPin.style.left = offset + 'px';
+        effectVal.style.width = offset + 'px';
+      }
+      setEffectIntensity(offset);
+    }
+
+    function onMouseUp(upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
 
   /*
    * function increases photo's scale when it is under 100%
@@ -255,6 +349,8 @@
     effectImagePreview.style.transform = 'scale(1.00)';
     scaleValue = 100;
     previewClasses.remove(previewClasses[1]);
+    effectImagePreview.style.filter = 'none';
+    effectLevel.classList.add('hidden');
     hideError(commentInput);
     hideError(hashtagInput);
     // removing listeners prevents from auto-validating inputs when next picture is being uploaded
