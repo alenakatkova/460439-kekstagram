@@ -83,7 +83,7 @@
       var effectClass = target.getAttribute('id').slice(7);
       previewClasses.remove(previewClasses[1]);
       previewClasses.add(effectClass);
-      setDftEffectValues();
+      setDefaultEffectValues();
     }
   }
 
@@ -93,7 +93,7 @@
   var effectVal = effectControl.querySelector('.upload-effect-level-val');
   var minX = 0;
   var maxX = 455;
-  var dftX = 0.2 * maxX;
+  var defaultX = 0.2 * maxX;
 
   // object for checking which effect is chosen
   var effects = {
@@ -117,7 +117,7 @@
     }
   };
 
-  function setDftEffectValues() {
+  function setDefaultEffectValues() {
     if (effects.isNothingChosen()) {
       effectLevel.classList.add('hidden');
     } else {
@@ -125,7 +125,7 @@
     }
     effectPin.style.left = '20%';
     effectVal.style.width = '20%';
-    setEffectIntensity(dftX);
+    setEffectIntensity(defaultX);
   }
 
   function setEffectIntensity(currentX) {
