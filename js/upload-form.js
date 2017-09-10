@@ -65,8 +65,8 @@
     }
   }
 
-  function adjustScale(scale) {
-    effectImagePreview.style.transform = 'scale(' + scale / 100 + ')';
+  function adjustScale(scaleValue) {
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
   }
 
   window.initializeScale(scaleControls, scale, maxScale, minScale, scalingStep, adjustScale);
