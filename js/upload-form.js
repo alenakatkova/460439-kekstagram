@@ -12,6 +12,10 @@
   var effectControls = uploadForm.querySelector('.upload-effect-controls');
 
   var scaleControls = document.querySelector('.upload-resize-controls');
+  var scale = document.querySelector('.upload-resize-controls-value');
+  var maxScale = +scale.getAttribute('max').slice(0, -1);
+  var minScale = +scale.getAttribute('min').slice(0, -1);
+  var scalingStep = +scale.getAttribute('step').slice(0, -1);
 
   var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
   var previewClasses = effectImagePreview.classList;
@@ -42,12 +46,12 @@
   function closeUploadOverlay() {
     // closing upload overlay
     uploadOverlay.classList.add('hidden');
+    // setting all inputs' values to default
+    reset();
     // removing keydown event listener
     document.removeEventListener('keydown', onOpenResizePressEsc);
     // opening file selecting form
     fileInput.click();
-    // setting all inputs' values to default
-    reset();
   }
 
   /*
@@ -65,7 +69,7 @@
     effectImagePreview.style.transform = 'scale(' + scale / 100 + ')';
   }
 
-  window.initializeScale.initialize(scaleControls, adjustScale);
+  window.initializeScale(scaleControls, scale, maxScale, minScale, scalingStep, adjustScale);
 
   function applyEffect(newEffectClass) {
     previewClasses.remove(previewClasses[1]);
@@ -315,9 +319,6 @@
   function reset() {
     uploadForm.reset();
     effectImagePreview.style.transform = 'scale(1.00)';
-
-    window.initializeScale.reset();
-    // scaleValue = 100;
     previewClasses.remove(previewClasses[1]);
     effectImagePreview.style.filter = 'none';
     effectLevel.classList.add('hidden');
