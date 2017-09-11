@@ -37,7 +37,8 @@
     <div class="upload-effect">
       <fieldset class="upload-resize-controls">
         <button type="button"
-                class="upload-resize-control upload-resize-controls-button upload-resize-controls-button-dec">–
+                class="upload-resize-control upload-resize-controls-button upload-resize-controls-button-dec"
+                data-scale="-">–
         </button><!--
         --><input type="text"
                   class="upload-resize-control upload-resize-controls-value"
@@ -49,7 +50,8 @@
                   max="100%"
                   step="25%"/><!--
         --><button type="button"
-                class="upload-resize-control upload-resize-controls-button upload-resize-controls-button-inc">+
+                class="upload-resize-control upload-resize-controls-button upload-resize-controls-button-inc"
+                data-scale="+">+
         </button>
       </fieldset>
 
@@ -175,6 +177,8 @@
 <script src="js/data.js"></script>
 <script src="js/pictures-rendering.js"></script>
 <script src="js/gallery-overlay.js"></script>
+<script src="js/initialize-scale.js"></script>
+<script src="js/initialize-filters.js"></script>
 <script src="js/upload-form.js"></script>
 </body>
 </html>

@@ -9,16 +9,9 @@
   var uploadFormCancel = uploadOverlay.querySelector('#upload-cancel');
   var commentInput = uploadForm.querySelector('.upload-form-description');
   var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
-  var effectControl = uploadForm.querySelector('.upload-effect-controls');
+  var effectControls = uploadForm.querySelector('.upload-effect-controls');
 
-  var zoomOut = uploadForm.querySelector('.upload-resize-controls-button-dec');
-  var zoomIn = uploadForm.querySelector('.upload-resize-controls-button-inc');
-  var scale = uploadForm.querySelector('.upload-resize-controls-value');
-
-  var scaleValue = +scale.getAttribute('value').slice(0, -1);
-  var maxScale = +scale.getAttribute('max').slice(0, -1);
-  var minScale = +scale.getAttribute('min').slice(0, -1);
-  var scalingStep = +scale.getAttribute('step').slice(0, -1);
+  var scaleControls = document.querySelector('.upload-resize-controls');
 
   var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
   var previewClasses = effectImagePreview.classList;
@@ -34,11 +27,8 @@
 
 // adding event listeners
   uploadFormCancel.addEventListener('click', closeUploadOverlay);
-  effectControl.addEventListener('click', onEffectControlClick);
-  zoomOut.addEventListener('click', onZoomOutClick);
-  zoomIn.addEventListener('click', onZoomInClick);
-  submit.addEventListener('click', validateForm);
 
+  submit.addEventListener('click', validateForm);
 // automatic opening of upload overlay when image file is chosen
 
   fileInput.addEventListener('change', openUploadOverlay);
@@ -52,12 +42,12 @@
   function closeUploadOverlay() {
     // closing upload overlay
     uploadOverlay.classList.add('hidden');
+    // setting all inputs' values to default
+    reset();
     // removing keydown event listener
     document.removeEventListener('keydown', onOpenResizePressEsc);
     // opening file selecting form
     fileInput.click();
-    // setting all inputs' values to default
-    reset();
   }
 
   /*
@@ -71,26 +61,30 @@
     }
   }
 
+  function adjustScale(scaleValue) {
+    effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
+  }
+
+  window.initializeScale(scaleControls, adjustScale);
+
+  function applyEffect(newEffectClass) {
+    previewClasses.remove(previewClasses[1]);
+    previewClasses.add(newEffectClass);
+    setDefaultEffectValues();
+  }
+
+  window.initializeFilters(effectControls, applyEffect);
+
   /*
    * function allows to change photo effect by choosing one of the effects listed in input[type="radio"],
        it adds chosen effect's class to the photo preview
        and deletes it when another effect is chosen
    */
 
-  function onEffectControlClick(evt) {
-    var target = evt.target;
-    if (target.name === 'effect') {
-      var effectClass = target.getAttribute('id').slice(7);
-      previewClasses.remove(previewClasses[1]);
-      previewClasses.add(effectClass);
-      setDefaultEffectValues();
-    }
-  }
-
   // variables for effects adjustments
-  var effectLevel = effectControl.querySelector('.upload-effect-level');
-  var effectPin = effectControl.querySelector('.upload-effect-level-pin');
-  var effectVal = effectControl.querySelector('.upload-effect-level-val');
+  var effectLevel = effectControls.querySelector('.upload-effect-level');
+  var effectPin = effectControls.querySelector('.upload-effect-level-pin');
+  var effectVal = effectControls.querySelector('.upload-effect-level-val');
   var minX = 0;
   var maxX = 455;
   var defaultX = 0.2 * maxX;
@@ -179,32 +173,6 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
-
-  /*
-   * function increases photo's scale when it is under 100%
-       by adding 0.25 to the value of transform: scale attribute
-   */
-
-  function onZoomInClick() {
-    if (scaleValue < maxScale) {
-      scaleValue += scalingStep;
-      scale.value = scaleValue + '%';
-      effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
-    }
-  }
-
-  /*
-   * function decreases photo's scale when it is more than 25%
-       by substracting 0.25 from the value of transform: scale attribute
-   */
-
-  function onZoomOutClick() {
-    if (scaleValue > minScale) {
-      scaleValue -= scalingStep;
-      scale.value = scaleValue + '%';
-      effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
-    }
-  }
 
   /* function sets rules and error messages for hashtags input
    * if input is empty, the error is hidden
@@ -347,7 +315,6 @@
   function reset() {
     uploadForm.reset();
     effectImagePreview.style.transform = 'scale(1.00)';
-    scaleValue = 100;
     previewClasses.remove(previewClasses[1]);
     effectImagePreview.style.filter = 'none';
     effectLevel.classList.add('hidden');
