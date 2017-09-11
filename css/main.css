@@ -860,3 +860,18 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
 .footer-social-item-vk {
   background-position: -84px 0;
 }
+
+.backend-error {
+  z-index: 100;
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 5px 5px -3px #34495e;
+  margin: 0 auto;
+  border: 1px solid #34495e;
+  position: absolute;
+  padding: 20px;
+  left: 0;
+  right: 0;
+  color: black;
+  font-size: 20px;
+}

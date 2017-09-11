@@ -29,6 +29,13 @@
         obj[arr[i]] = '';
       }
       return Object.keys(obj).length;
+    },
+
+    errorHandler: function (errorMessage) {
+      var node = document.createElement('div');
+      node.className = 'backend-error';
+      node.textContent = 'Oops! ' + errorMessage + ' Try again later';
+      document.body.insertAdjacentElement('afterbegin', node);
     }
   };
 })();
