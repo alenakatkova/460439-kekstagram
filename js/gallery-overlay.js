@@ -14,8 +14,8 @@
   }
 
   /*
-   * function showd hidden gallery overlay
-     and adds event listeners to allow to use ESC and ENTER
+   * function shows hidden gallery overlay
+     and adds event listeners to allow using ESC and ENTER
      to close gallery overlay
    */
 
