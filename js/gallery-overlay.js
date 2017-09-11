@@ -3,10 +3,7 @@
 (function () {
   var galleryOverlay = document.querySelector('.gallery-overlay');
   var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
-
   var preview = galleryOverlay.querySelector('.gallery-overlay-preview');
-
-  var allPictures = document.querySelectorAll('.picture');
 
   function onOpenGalleryOverlayPressEsc(evt) {
     window.util.isEscEvent(evt, closeGalleryOverlay);
@@ -16,18 +13,15 @@
     window.util.isEnterEvent(evt, closeGalleryOverlay);
   }
 
-  function openGalleyOverlay(imageURL, pictureNumberInArray) {
+  /*
+   * function shows hidden gallery overlay
+     and adds event listeners to allow using ESC and ENTER
+     to close gallery overlay
+   */
+
+  function openGalleyOverlay() {
     galleryOverlay.classList.remove('hidden');
-
-    // render opened picture
-    preview.querySelector('.gallery-overlay-image').src = imageURL;
-    preview.querySelector('.comments-count').textContent = window.data.getComments(pictureNumberInArray);
-    preview.querySelector('.likes-count').textContent = window.data.getLikes(pictureNumberInArray);
-
-    // allow to use ESC to close gallery overlay
     document.addEventListener('keydown', onOpenGalleryOverlayPressEsc);
-
-    // allow to use ENTER to close gallery overlay when focused on cross button
     galleryOverlayClose.addEventListener('keydown', onGalleryOverlayClosePressEnter);
   }
 
@@ -37,16 +31,47 @@
     galleryOverlayClose.removeEventListener('keydown', onGalleryOverlayClosePressEnter);
   }
 
-  // add event listeners
+  galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
 
-  for (var i = 0; i < allPictures.length; i++) {
-    allPictures[i].addEventListener('click', function (evt) {
-      evt.preventDefault();
-      var currentPicture = evt.currentTarget.querySelector('img');
-      openGalleyOverlay(currentPicture.getAttribute('src'),
-          currentPicture.getAttribute('data-number-in-array'));
-    });
+  /*
+   * function gets data (url, amount of comments and likes)
+     from the picture that was chosen by user
+   * @param is for evt.currentTarget in click and keydown events
+   */
+
+  function showPictureInGalleryOverlay(chosenPicture) {
+    var pictureStats = chosenPicture.querySelector('.picture-stats');
+    var pictureData = {
+      url: chosenPicture.querySelector('img').src,
+      comments: pictureStats.querySelector('.picture-comments').textContent,
+      likes: pictureStats.querySelector('.picture-likes').textContent
+    };
+    preview.querySelector('.gallery-overlay-image').src = pictureData.url;
+    preview.querySelector('.comments-count').textContent = pictureData.comments;
+    preview.querySelector('.likes-count').textContent = pictureData.likes;
+    openGalleyOverlay();
   }
 
-  galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
+  /*
+   * function add event listeners (click & keydown) to all pictures in the Gallery
+   * after clicking / pressing Enter on the picture, gallery overlay is opened
+   */
+
+  window.galleryOverlay = {
+    addEventListeners: function () {
+      var allPictures = document.querySelectorAll('.picture');
+      for (var i = 0; i < allPictures.length; i++) {
+        allPictures[i].addEventListener('click', function (evt) {
+          evt.preventDefault();
+          showPictureInGalleryOverlay(evt.currentTarget);
+        });
+        allPictures[i].addEventListener('keydown', function (evt) {
+          window.util.isEnterEvent(evt, function () {
+            evt.preventDefault();
+            showPictureInGalleryOverlay(evt.currentTarget);
+          });
+        });
+      }
+    }
+  };
 })();

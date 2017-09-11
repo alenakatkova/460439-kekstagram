@@ -324,4 +324,9 @@
     commentInput.removeEventListener('input', validateCommentInput);
     hashtagInput.removeEventListener('input', validateHashtagInput);
   }
+
+  uploadForm.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(uploadForm), closeUploadOverlay, window.util.errorHandler);
+    evt.preventDefault();
+  });
 })();
