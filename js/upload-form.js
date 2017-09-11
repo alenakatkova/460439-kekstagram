@@ -12,10 +12,6 @@
   var effectControls = uploadForm.querySelector('.upload-effect-controls');
 
   var scaleControls = document.querySelector('.upload-resize-controls');
-  var scale = document.querySelector('.upload-resize-controls-value');
-  var maxScale = +scale.getAttribute('max').slice(0, -1);
-  var minScale = +scale.getAttribute('min').slice(0, -1);
-  var scalingStep = +scale.getAttribute('step').slice(0, -1);
 
   var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
   var previewClasses = effectImagePreview.classList;
@@ -69,7 +65,7 @@
     effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
   }
 
-  window.initializeScale(scaleControls, scale, maxScale, minScale, scalingStep, adjustScale);
+  window.initializeScale(scaleControls, adjustScale);
 
   function applyEffect(newEffectClass) {
     previewClasses.remove(previewClasses[1]);
