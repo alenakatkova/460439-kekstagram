@@ -7,10 +7,6 @@
   };
 
   window.util = {
-    generateRandomInteger: function (min, max) {
-      return Math.floor(min + Math.random() * (max + 1 - min));
-    },
-
     isEscEvent: function (evt, action) {
       if (evt.keyCode === KEYCODES.ESC) {
         action();
@@ -36,6 +32,10 @@
       node.className = 'backend-error';
       node.textContent = 'Oops! ' + errorMessage + ' Try again later';
       document.body.insertAdjacentElement('afterbegin', node);
+    },
+
+    compareItems: function (first, second) {
+      return second - first;
     }
   };
 })();

@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-
-  function renderPicture(picture, index) {
+  // function creates picture and picture' stats using data: URL, amount of comments and likes
+  function getPictureItem(picture) {
     var template = document.querySelector('#picture-template').content.querySelector('.picture');
     var pictureItem = template.cloneNode(true);
     pictureItem.querySelector('img').src = picture.url;
@@ -11,25 +11,75 @@
     return pictureItem;
   }
 
-  function successHandler(data) {
-    var picturesList = document.querySelector('.pictures');
+  var picturesList = document.querySelector('.pictures');
 
+  // function renders pictures using data from array
+  function renderPictures(array) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < data.length; i++) {
-      fragment.appendChild(renderPicture(data[i], i));
+    for (var i = 0; i < array.length; i++) {
+      fragment.appendChild(getPictureItem(array[i]));
     }
     picturesList.appendChild(fragment);
-
-    window.galleryOverlay.addEventListeners();
   }
 
-  // function errorHandler(errorMessage) {
-  //   var node = document.createElement('div');
-  //   node.className = 'backend-error';
-  //   node.textContent = 'Oops! ' + errorMessage + ' Try again later';
-  //   document.body.insertAdjacentElement('afterbegin', node);
-  // }
+  // function deletes rendered pictures
+  function clearPictures() {
+    while (picturesList.firstChild) {
+      picturesList.removeChild(picturesList.firstChild);
+    }
+  }
 
+  var filtersController = document.querySelector('.filters');
+  var recommended = filtersController.querySelector('#filter-recommend');
+  var popular = filtersController.querySelector('#filter-popular');
+  var discussed = filtersController.querySelector('#filter-discussed');
+  var random = filtersController.querySelector('#filter-random');
+  var pictures = [];
+
+  // function re-renders pictures when user clicks on chosen filter
+  function onFiltersClick(evt) {
+    if (evt.target.name === 'filter') {
+      clearPictures();
+    }
+
+    var filteredPictures = pictures.slice();
+
+    if (evt.target === popular) {
+      filteredPictures.sort(function (first, second) {
+        return window.util.compareItems(first.likes, second.likes);
+      });
+    } else if (evt.target === discussed) {
+      filteredPictures.sort(function (first, second) {
+        return window.util.compareItems(first.comments.length, second.comments.length);
+      });
+    } else if (evt.target === random) {
+      filteredPictures.sort(function (first, second) {
+        return 0.5 - Math.random();
+      });
+    } else if (evt.target === recommended) {
+      filteredPictures = pictures;
+    }
+
+    window.debounce(function () {
+      renderPictures(filteredPictures);
+    });
+  }
+
+  /*
+   * function renders pictures when data from the server is received
+   * @param data from the server
+   */
+
+  function successHandler(data) {
+    pictures = data;
+    renderPictures(pictures);
+
+    window.galleryOverlay.addEventListeners();
+
+    filtersController.classList.remove('hidden');
+    filtersController.addEventListener('click', onFiltersClick);
+  }
+
+  // get data from server
   window.backend.load(successHandler, window.util.errorHandler);
-
 })();
