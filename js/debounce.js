@@ -1,6 +1,6 @@
 'use strict';
 
-(function() {
+(function () {
   var debounceInterval = 500;
   var lastTimeout;
 
