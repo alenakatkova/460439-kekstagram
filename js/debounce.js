@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @exports debounce function which groups sequential call of the listener in a single call
+ */
+
 (function () {
   var debounceInterval = 500;
   var lastTimeout;

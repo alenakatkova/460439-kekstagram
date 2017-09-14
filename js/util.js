@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @exports to window basic variables and functions that can be used in different modules
+ */
+
 (function () {
   var KEYCODES = {
     ENTER: 13,

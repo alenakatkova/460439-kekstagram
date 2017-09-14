@@ -1,7 +1,17 @@
 'use strict';
 
+/**
+ * Module contains functions that render, re-render and clear pictures using data received from the server
+ */
+
 (function () {
-  // function creates picture and picture' stats using data: URL, amount of comments and likes
+
+  /**
+   * Function copies template and inserts data (received from the parameter) in it.
+   * @param {Object} picture - Contains picture URL, amount of likes and list of comments
+   * @returns generated picture with stats
+   */
+
   function getPictureItem(picture) {
     var template = document.querySelector('#picture-template').content.querySelector('.picture');
     var pictureItem = template.cloneNode(true);
@@ -13,17 +23,27 @@
 
   var picturesList = document.querySelector('.pictures');
 
-  // function renders pictures using data from array
-  function renderPictures(array) {
+  /**
+   * Function renders pictures using data from array and inserts them into container.
+   * It also adds event listeners to the rendered pictures. These listeners are used to open
+   * each picture in gallery overlay by clicking on it / pressing ENTER when focused on it.
+   * @param {Array} arr - Contains objects with pictures' data: URLs, comments list and amount of likes
+   */
+
+  function renderPictures(arr) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      fragment.appendChild(getPictureItem(array[i]));
+    for (var i = 0; i < arr.length; i++) {
+      fragment.appendChild(getPictureItem(arr[i]));
     }
     picturesList.appendChild(fragment);
     window.galleryOverlay.addEventListeners();
   }
 
-  // function deletes rendered pictures
+  /**
+   * Function deletes rendered pictures from the container.
+   * To be used when applying new filter.
+   */
+
   function clearPictures() {
     while (picturesList.firstChild) {
       picturesList.removeChild(picturesList.firstChild);
@@ -37,7 +57,11 @@
   var random = filtersController.querySelector('#filter-random');
   var pictures = [];
 
-  // function re-renders pictures when user clicks on chosen filter
+  /**
+   * Function deletes rendered earlier pictures and re-renders them when user clicks applies filter.
+   * Uses debounce function to prevent from blinking when user clicks on filters to fast.
+   */
+
   function onFiltersClick(evt) {
     if (evt.target.name === 'filter') {
       clearPictures();
@@ -71,9 +95,11 @@
     });
   }
 
-  /*
-   * function renders pictures when data from the server is received
-   * @param data from the server
+  /**
+   * Function renders pictures when data from the server is susccessfully received.
+   * When pictures are rendered, function shows list of filters and adds event listeners to them.
+   * @param {Array} data - Data from the server. Contains objects with pictures' URLS,
+   * list of comments and amount of likes.
    */
 
   function successHandler(data) {
@@ -83,6 +109,9 @@
     filtersController.addEventListener('click', onFiltersClick);
   }
 
-  // get data from server
+  /**
+   * getting data from server
+   */
+
   window.backend.load(successHandler, window.util.errorHandler);
 })();

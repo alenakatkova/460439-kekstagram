@@ -1,58 +1,51 @@
 'use strict';
 
+/**
+ * Module contains functions that describe behaviour of the upload form's elements,
+ * including scale controls, effects controls, text inputs.
+ */
+
 (function () {
   var uploadForm = document.querySelector('#upload-select-image');
   var fileInput = uploadForm.querySelector('#upload-file');
+  var uploadOverlay = uploadForm.querySelector('.upload-overlay');
 
-  var uploadOverlay = document.querySelector('.upload-overlay');
-  var submit = uploadOverlay.querySelector('#upload-submit');
-  var uploadFormCancel = uploadOverlay.querySelector('#upload-cancel');
-  var commentInput = uploadForm.querySelector('.upload-form-description');
-  var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
-  var effectControls = uploadForm.querySelector('.upload-effect-controls');
-
-  var scaleControls = document.querySelector('.upload-resize-controls');
-
-  var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
-  var previewClasses = effectImagePreview.classList;
-
-// function opens upload overlay, adds event listeners
+  /**
+   * Function hides file choosing form, openes picture editing form and
+   * adds event listener that allows to use ESC to close picture editing form
+   */
 
   function openUploadOverlay() {
-    // opening upload overlay
-    uploadOverlay.classList.remove('hidden');
     fileInput.classList.add('hidden');
+    uploadOverlay.classList.remove('hidden');
     document.addEventListener('keydown', onOpenResizePressEsc);
   }
 
-// adding event listeners
-  uploadFormCancel.addEventListener('click', closeUploadOverlay);
-
-  submit.addEventListener('click', validateForm);
-// automatic opening of upload overlay when image file is chosen
-
-  fileInput.addEventListener('change', openUploadOverlay);
-
-  /*
-   * function closes upload overlay,
-       removes event listeners added when upload overlay was open,
-       opens back file selecting form
+  /**
+   * Function closes upload overlay, resets inputs values to default,
+   * removes event listeners added when upload overlay was open,
+   * opens back file selecting form.
    */
 
   function closeUploadOverlay() {
-    // closing upload overlay
     uploadOverlay.classList.add('hidden');
-    // setting all inputs' values to default
     reset();
-    // removing keydown event listener
     document.removeEventListener('keydown', onOpenResizePressEsc);
-    // opening file selecting form
     fileInput.click();
   }
 
-  /*
-   * function allows to use ESC to close upload overlay
-   * exception: when comment input is focused, ESC doesn't work
+  var submit = uploadOverlay.querySelector('#upload-submit');
+  var uploadFormCancel = uploadOverlay.querySelector('#upload-cancel');
+
+  uploadFormCancel.addEventListener('click', closeUploadOverlay);
+  submit.addEventListener('click', validateForm);
+  fileInput.addEventListener('change', openUploadOverlay);
+
+  var commentInput = uploadForm.querySelector('.upload-form-description');
+
+  /**
+   * Function allows to use ESC to close upload overlay.
+   * Exception: when comment input is focused, ESC doesn't work.
    */
 
   function onOpenResizePressEsc(evt) {
@@ -61,11 +54,29 @@
     }
   }
 
+  var scaleControls = document.querySelector('.upload-resize-controls');
+
+  /**
+   * Function sets scale style to the picture.
+   * Calculations are made in the module initialize-scale.js.
+   * @param {Number} scaleValue - Value is set by the user.
+   */
+
   function adjustScale(scaleValue) {
     effectImagePreview.style.transform = 'scale(' + scaleValue / 100 + ')';
   }
 
   window.initializeScale(scaleControls, adjustScale);
+
+
+  var effectControls = uploadForm.querySelector('.upload-effect-controls');
+  var effectImagePreview = uploadForm.querySelector('.effect-image-preview');
+  var previewClasses = effectImagePreview.classList;
+
+  /**
+   * Function sets effect's class to the picture preview removing previous effect's class
+   * @param {String} newEffectClass - Is defined in the module initialize-filters.js.
+   */
 
   function applyEffect(newEffectClass) {
     previewClasses.remove(previewClasses[1]);
@@ -75,13 +86,6 @@
 
   window.initializeFilters(effectControls, applyEffect);
 
-  /*
-   * function allows to change photo effect by choosing one of the effects listed in input[type="radio"],
-       it adds chosen effect's class to the photo preview
-       and deletes it when another effect is chosen
-   */
-
-  // variables for effects adjustments
   var effectLevel = effectControls.querySelector('.upload-effect-level');
   var effectPin = effectControls.querySelector('.upload-effect-level-pin');
   var effectVal = effectControls.querySelector('.upload-effect-level-val');
@@ -89,7 +93,10 @@
   var maxX = 455;
   var defaultX = 0.2 * maxX;
 
-  // object for checking which effect is chosen
+  /**
+   * Object with functions for checking which effect is chosen.
+   */
+
   var effects = {
     isNothingChosen: function () {
       return (previewClasses.length === 1 || previewClasses.contains('effect-none'));
@@ -111,6 +118,11 @@
     }
   };
 
+  /**
+   * Functions sets effect's values to default,
+   * hides effect's intensity input if no effect is chosen.
+   */
+
   function setDefaultEffectValues() {
     if (effects.isNothingChosen()) {
       effectLevel.classList.add('hidden');
@@ -121,6 +133,11 @@
     effectVal.style.width = '20%';
     setEffectIntensity(defaultX);
   }
+
+  /**
+   * Function changes effect's intensity depending on how user moves intensity pin.
+   * @param {Number} currentX - Is used to calculate intensity. It is got when the user moves intensity pin
+   */
 
   function setEffectIntensity(currentX) {
     if (effects.isNothingChosen()) {
@@ -138,8 +155,12 @@
     }
   }
 
-  // allow to use pin to adjust filter intensity
-  effectPin.addEventListener('mousedown', function (evt) {
+  /**
+   * Function proccess mousedown, mosemove and mouseup events on intensity pin.
+   * Calculates offset of the pin and uses this number to calculate intensity of the effect.
+   */
+
+  function onEffectPinMousedown(evt) {
     evt.preventDefault();
 
     var startX = evt.clientX;
@@ -172,10 +193,15 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-  });
+  }
 
-  /* function sets rules and error messages for hashtags input
-   * if input is empty, the error is hidden
+  effectPin.addEventListener('mousedown', onEffectPinMousedown);
+
+  var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
+
+  /**
+   * Function sets rules and error messages for hashtags input, and validates it.
+   * If input is empty / valid, error message is hidden.
    */
 
   function validateHashtagInput() {
@@ -185,7 +211,8 @@
       var maxHashtagLength = 20;
       var maxAmountOfHashtags = 5;
 
-      /* functions check validity of the hashtag input
+      /**
+       * Functions check validity of the hashtag input.
        * @return true if invalid
        */
 
@@ -235,8 +262,6 @@
         }
       };
 
-      // setting error messages of invalidities
-
       if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
         hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
         showError(hashtagInput);
@@ -263,7 +288,10 @@
     }
   }
 
-// function sets error messages for comment input
+  /**
+   * Function sets error messages for comment input, validates it.
+   * If input is valid, error message is hidden.
+   */
 
   function validateCommentInput() {
     var minCommentLength = commentInput.getAttribute('minlength');
@@ -284,21 +312,29 @@
     }
   }
 
-// function makes input's border red when input is invalid
+  /**
+   * Function adds error class to the input.
+   * @param {Node} input
+   */
 
   function showError(input) {
     input.classList.add('upload-message-error');
   }
+
+  /**
+   * Function removes error class and error message from the input.
+   * @param {Node} input
+   */
 
   function hideError(input) {
     input.classList.remove('upload-message-error');
     input.setCustomValidity('');
   }
 
-  /*
-   * function validates two inputs: hashtags and comment
-   * event listeners 'inputs' are used to validate inputs after first validation that was performed when
-       we clicked on 'submit'
+  /**
+   * Function validates two inputs: hashtags and comment.
+   * Event listener 'input' is used to validate inputs after first validation that was performed when
+   * the user clicked on 'submit' button.
    */
 
   function validateForm(evt) {
@@ -310,7 +346,10 @@
     }
   }
 
-// function sets form's values to default
+  /**
+   * Function sets form's values to default, and removes listeners 'input' from inputs
+   * to prevent from auto-validating inputs when next picture is being uploaded
+   */
 
   function reset() {
     uploadForm.reset();
@@ -320,13 +359,22 @@
     effectLevel.classList.add('hidden');
     hideError(commentInput);
     hideError(hashtagInput);
-    // removing listeners prevents from auto-validating inputs when next picture is being uploaded
     commentInput.removeEventListener('input', validateCommentInput);
     hashtagInput.removeEventListener('input', validateHashtagInput);
   }
 
-  uploadForm.addEventListener('submit', function (evt) {
+  uploadForm.addEventListener('submit', onUploadFormSubmit);
+
+  /**
+   * Function launches function save from the module backend.js and passes the following to it:
+   * 1) from data, filled in by the user
+   * 2) function which closes the form
+   * 3) function that processes errors
+   * Function save sends data to the server.
+   */
+
+  function onUploadFormSubmit(evt) {
     window.backend.save(new FormData(uploadForm), closeUploadOverlay, window.util.errorHandler);
     evt.preventDefault();
-  });
+  }
 })();

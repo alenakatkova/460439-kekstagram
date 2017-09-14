@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * @exports function that calculates scale value and sets it to the scale input
+ * @param {Node} controls - Form's fieldset responsible for changing scale
+ * @param {Function} cb - Callback function fo which we pass calculated scale value
+ */
+
 (function () {
 
   window.initializeScale = function (controls, cb) {
