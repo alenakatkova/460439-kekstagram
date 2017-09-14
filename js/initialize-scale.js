@@ -12,11 +12,11 @@
     controls.addEventListener('click', function (evt) {
 
       var scale = controls.querySelector('input');
-      var maxScale = +scale.getAttribute('max').slice(0, -1);
-      var minScale = +scale.getAttribute('min').slice(0, -1);
-      var scalingStep = +scale.getAttribute('step').slice(0, -1);
+      var maxScale = parseInt(scale.max, 10);
+      var minScale = parseInt(scale.min, 10);
+      var scalingStep = parseInt(scale.step, 10);
 
-      var currentValue = +scale.value.slice(0, -1);
+      var currentValue = parseInt(scale.value, 10);
 
       if (evt.target.dataset.scale === '+' && currentValue < maxScale) {
         currentValue += scalingStep;
