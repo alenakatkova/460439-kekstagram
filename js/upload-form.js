@@ -301,23 +301,24 @@
   }
 
   /**
-   * Function sets error messages for comment input, validates it.
-   * If input is valid, error message is hidden.
+   * Function sets error messages for comment input, validates it. If input is valid, error message is hidden.
+   * Dataset attribute & extra short length validation is for browsers that
+   * don't support minlength attribute, e.g., Microsoft Edge.
    */
 
   function validateDescription() {
-    var minCommentLength = description.getAttribute('minlength');
-    var maxCommentLength = description.getAttribute('maxlength');
+    var minDescriptionLength = description.getAttribute('minlength') || description.dataset.minlength;
+    var maxDescriptionLength = description.getAttribute('maxlength');
     var validity = description.validity;
 
     if (validity.valueMissing) {
       description.setCustomValidity('This field is required');
       showError(description);
-    } else if (validity.tooShort) {
-      description.setCustomValidity('The comment length should be at least ' + minCommentLength + ' characters');
+    } else if (validity.tooShort || description.value.length < minDescriptionLength) {
+      description.setCustomValidity('The comment length should be at least ' + minDescriptionLength + ' characters');
       showError(description);
     } else if (validity.tooLong) {
-      description.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
+      description.setCustomValidity('The comment length should be ' + maxDescriptionLength + ' caracters or less');
       showError(description);
     } else {
       hideError(description);
@@ -327,6 +328,7 @@
   /**
    * Functions proccess input events on Description and Hashtags inputs.
    */
+
   function onDescriptionInput() {
     validateDescription();
   }
