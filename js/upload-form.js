@@ -382,6 +382,7 @@
     previewClasses.remove(previewClasses[1]);
     effectImagePreview.style.filter = 'none';
     effectLevel.classList.add('hidden');
+    description.style.boxShadow = 'none'; // to prevent Firefox from auto-validating required field
     hideError(description);
     hideError(hashtag);
     description.removeEventListener('input', onDescriptionInput);
