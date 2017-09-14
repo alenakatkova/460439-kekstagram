@@ -20,6 +20,7 @@
       fragment.appendChild(getPictureItem(array[i]));
     }
     picturesList.appendChild(fragment);
+    window.galleryOverlay.addEventListeners();
   }
 
   // function deletes rendered pictures
@@ -78,9 +79,6 @@
   function successHandler(data) {
     pictures = data;
     renderPictures(pictures);
-
-    window.galleryOverlay.addEventListeners();
-
     filtersController.classList.remove('hidden');
     filtersController.addEventListener('click', onFiltersClick);
   }
