@@ -2,7 +2,7 @@
 
 (function () {
 
-  window.initializeScale = function (controls, callback) {
+  window.initializeScale = function (controls, cb) {
     controls.addEventListener('click', function (evt) {
 
       var scale = controls.querySelector('input');
@@ -19,8 +19,8 @@
       }
       scale.value = currentValue + '%';
 
-      if (typeof callback === 'function') {
-        callback(currentValue);
+      if (typeof cb === 'function') {
+        cb(currentValue);
       }
     });
   };
