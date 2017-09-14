@@ -8,12 +8,20 @@
   var galleryOverlay = document.querySelector('.gallery-overlay');
   var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 
+  /**
+   * Functions proccess click and keydown events on gallery-overlay-close element.
+   */
+
   function onOpenGalleryOverlayPressEsc(evt) {
     window.util.isEscEvent(evt, closeGalleryOverlay);
   }
 
   function onGalleryOverlayClosePressEnter(evt) {
     window.util.isEnterEvent(evt, closeGalleryOverlay);
+  }
+
+  function onGalleryOverlayCloseClick() {
+    closeGalleryOverlay();
   }
 
   /**
@@ -38,7 +46,7 @@
     galleryOverlayClose.removeEventListener('keydown', onGalleryOverlayClosePressEnter);
   }
 
-  galleryOverlayClose.addEventListener('click', closeGalleryOverlay);
+  galleryOverlayClose.addEventListener('click', onGalleryOverlayCloseClick);
 
   var preview = galleryOverlay.querySelector('.gallery-overlay-preview');
 
@@ -47,7 +55,7 @@
    * @param {Node} chosenPicture - Is for evt.currentTarget in click and keydown events
    */
 
-  function showPictureInGalleryOverlay(chosenPicture) {
+  function showPicture(chosenPicture) {
     var pictureStats = chosenPicture.querySelector('.picture-stats');
     var pictureData = {
       url: chosenPicture.querySelector('img').src,
@@ -71,12 +79,12 @@
       for (var i = 0; i < allPictures.length; i++) {
         allPictures[i].addEventListener('click', function (evt) {
           evt.preventDefault();
-          showPictureInGalleryOverlay(evt.currentTarget);
+          showPicture(evt.currentTarget);
         });
         allPictures[i].addEventListener('keydown', function (evt) {
           window.util.isEnterEvent(evt, function () {
             evt.preventDefault();
-            showPictureInGalleryOverlay(evt.currentTarget);
+            showPicture(evt.currentTarget);
           });
         });
       }

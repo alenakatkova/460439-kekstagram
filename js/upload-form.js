@@ -11,11 +11,11 @@
   var uploadOverlay = uploadForm.querySelector('.upload-overlay');
 
   /**
-   * Function hides file choosing form, openes picture editing form and
+   * Function hides file choosing form, opens picture editing form and
    * adds event listener that allows to use ESC to close picture editing form
    */
 
-  function openUploadOverlay() {
+  function onFileInputChange() {
     fileInput.classList.add('hidden');
     uploadOverlay.classList.remove('hidden');
     document.addEventListener('keydown', onOpenResizePressEsc);
@@ -37,11 +37,15 @@
   var submit = uploadOverlay.querySelector('#upload-submit');
   var uploadFormCancel = uploadOverlay.querySelector('#upload-cancel');
 
-  uploadFormCancel.addEventListener('click', closeUploadOverlay);
-  submit.addEventListener('click', validateForm);
-  fileInput.addEventListener('change', openUploadOverlay);
+  function onUploadFormCancelClick() {
+    closeUploadOverlay();
+  }
 
-  var commentInput = uploadForm.querySelector('.upload-form-description');
+  uploadFormCancel.addEventListener('click', onUploadFormCancelClick);
+  submit.addEventListener('click', onSubmitClick);
+  fileInput.addEventListener('change', onFileInputChange);
+
+  var description = uploadForm.querySelector('.upload-form-description');
 
   /**
    * Function allows to use ESC to close upload overlay.
@@ -49,7 +53,7 @@
    */
 
   function onOpenResizePressEsc(evt) {
-    if (evt.target !== commentInput) {
+    if (evt.target !== description) {
       window.util.isEscEvent(evt, closeUploadOverlay);
     }
   }
@@ -197,16 +201,16 @@
 
   effectPin.addEventListener('mousedown', onEffectPinMousedown);
 
-  var hashtagInput = uploadForm.querySelector('.upload-form-hashtags');
+  var hashtag = uploadForm.querySelector('.upload-form-hashtags');
 
   /**
    * Function sets rules and error messages for hashtags input, and validates it.
    * If input is empty / valid, error message is hidden.
    */
 
-  function validateHashtagInput() {
-    if (hashtagInput.value.length > 0) {
-      var hashtags = hashtagInput.value.split(' ');
+  function validateHashtag() {
+    if (hashtag.value.length > 0) {
+      var hashtags = hashtag.value.split(' ');
 
       var maxHashtagLength = 20;
       var maxAmountOfHashtags = 5;
@@ -262,36 +266,36 @@
         },
 
         isOnlyWordsUsed: function () {
-          return !hashtagInput.value.match(/^[a-zA-ZА-Яа-яЁё# ]+$/);
+          return !hashtag.value.match(/^[a-zA-ZА-Яа-яЁё# ]+$/);
         }
       };
 
       if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
-        hashtagInput.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
-        showError(hashtagInput);
+        hashtag.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
+        showError(hashtag);
       } else if (hashtagInvalidities.isHashMissing()) {
-        hashtagInput.setCustomValidity('Each hashtag should start with #');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Each hashtag should start with #');
+        showError(hashtag);
       } else if (hashtagInvalidities.isHashtagTooLong()) {
-        hashtagInput.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
+        showError(hashtag);
       } else if (hashtagInvalidities.isHashtagRepeated()) {
-        hashtagInput.setCustomValidity('Hashtags shouldn\'t be repeated');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Hashtags shouldn\'t be repeated');
+        showError(hashtag);
       } else if (hashtagInvalidities.isWordMissing()) {
-        hashtagInput.setCustomValidity('Hashtag should contain at least 1 character');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Hashtag should contain at least 1 character');
+        showError(hashtag);
       } else if (hashtagInvalidities.isSpaceMissing()) {
-        hashtagInput.setCustomValidity('Hashtags should be splitted by space');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Hashtags should be splitted by space');
+        showError(hashtag);
       } else if (hashtagInvalidities.isOnlyWordsUsed()) {
-        hashtagInput.setCustomValidity('Hashtags should contain only letters');
-        showError(hashtagInput);
+        hashtag.setCustomValidity('Hashtags should contain only letters');
+        showError(hashtag);
       } else {
-        hideError(hashtagInput);
+        hideError(hashtag);
       }
     } else {
-      hideError(hashtagInput);
+      hideError(hashtag);
     }
   }
 
@@ -300,27 +304,38 @@
    * If input is valid, error message is hidden.
    */
 
-  function validateCommentInput() {
-    var minCommentLength = commentInput.getAttribute('minlength');
-    var maxCommentLength = commentInput.getAttribute('maxlength');
-    var validity = commentInput.validity;
+  function validateDescription() {
+    var minCommentLength = description.getAttribute('minlength');
+    var maxCommentLength = description.getAttribute('maxlength');
+    var validity = description.validity;
 
     if (validity.valueMissing) {
-      commentInput.setCustomValidity('This field is required');
-      showError(commentInput);
+      description.setCustomValidity('This field is required');
+      showError(description);
     } else if (validity.tooShort) {
-      commentInput.setCustomValidity('The comment length should be at least ' + minCommentLength + ' characters');
-      showError(commentInput);
+      description.setCustomValidity('The comment length should be at least ' + minCommentLength + ' characters');
+      showError(description);
     } else if (validity.tooLong) {
-      commentInput.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
-      showError(commentInput);
+      description.setCustomValidity('The comment length should be ' + maxCommentLength + ' caracters or less');
+      showError(description);
     } else {
-      hideError(commentInput);
+      hideError(description);
     }
   }
 
   /**
-   * Function adds error class to the input.
+   * Functions proccess input events on Description and Hashtags inputs.
+   */
+  function onDescriptionInput() {
+    validateDescription();
+  }
+
+  function onHashtagInput() {
+    validateHashtag();
+  }
+
+  /**
+   * Function adds error class to the input passed by parameter.
    * @param {Node} input
    */
 
@@ -329,7 +344,7 @@
   }
 
   /**
-   * Function removes error class and error message from the input.
+   * Function removes error class and error message from the input passed by parameter.
    * @param {Node} input
    */
 
@@ -344,12 +359,12 @@
    * the user clicked on 'submit' button.
    */
 
-  function validateForm(evt) {
+  function onSubmitClick(evt) {
     if (evt.target === submit) {
-      validateCommentInput();
-      commentInput.addEventListener('input', validateCommentInput);
-      validateHashtagInput();
-      hashtagInput.addEventListener('input', validateHashtagInput);
+      validateDescription();
+      description.addEventListener('input', onDescriptionInput);
+      validateHashtag();
+      hashtag.addEventListener('input', onHashtagInput);
     }
   }
 
@@ -364,10 +379,10 @@
     previewClasses.remove(previewClasses[1]);
     effectImagePreview.style.filter = 'none';
     effectLevel.classList.add('hidden');
-    hideError(commentInput);
-    hideError(hashtagInput);
-    commentInput.removeEventListener('input', validateCommentInput);
-    hashtagInput.removeEventListener('input', validateHashtagInput);
+    hideError(description);
+    hideError(hashtag);
+    description.removeEventListener('input', onDescriptionInput);
+    hashtag.removeEventListener('input', onHashtagInput);
   }
 
   uploadForm.addEventListener('submit', onUploadFormSubmit);
