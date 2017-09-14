@@ -259,6 +259,10 @@
 
         isAmountOfHashtagsTooBig: function () {
           return hashtags.length > maxAmountOfHashtags;
+        },
+
+        isOnlyWordsUsed: function () {
+          return !hashtagInput.value.match(/^[a-zA-ZА-Яа-яЁё# ]+$/);
         }
       };
 
@@ -279,6 +283,9 @@
         showError(hashtagInput);
       } else if (hashtagInvalidities.isSpaceMissing()) {
         hashtagInput.setCustomValidity('Hashtags should be splitted by space');
+        showError(hashtagInput);
+      } else if (hashtagInvalidities.isOnlyWordsUsed()) {
+        hashtagInput.setCustomValidity('Hashtags should contain only letters');
         showError(hashtagInput);
       } else {
         hideError(hashtagInput);
