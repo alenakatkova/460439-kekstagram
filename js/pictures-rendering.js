@@ -44,20 +44,25 @@
 
     var filteredPictures = pictures.slice();
 
-    if (evt.target === popular) {
-      filteredPictures.sort(function (first, second) {
-        return window.util.compareItems(first.likes, second.likes);
-      });
-    } else if (evt.target === discussed) {
-      filteredPictures.sort(function (first, second) {
-        return window.util.compareItems(first.comments.length, second.comments.length);
-      });
-    } else if (evt.target === random) {
-      filteredPictures.sort(function (first, second) {
-        return 0.5 - Math.random();
-      });
-    } else if (evt.target === recommended) {
-      filteredPictures = pictures;
+    switch (evt.target) {
+      case popular:
+        filteredPictures.sort(function (first, second) {
+          return window.util.compareItems(first.likes, second.likes);
+        });
+        break;
+      case discussed:
+        filteredPictures.sort(function (first, second) {
+          return window.util.compareItems(first.comments.length, second.comments.length);
+        });
+        break;
+      case random:
+        filteredPictures.sort(function () {
+          return 0.5 - Math.random();
+        });
+        break;
+      case recommended:
+        filteredPictures = pictures;
+        break;
     }
 
     window.debounce(function () {
