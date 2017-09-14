@@ -6,6 +6,13 @@
  */
 
 (function () {
+  var MIN_X = 0;
+  var MAX_X = 455;
+  var DEFAULT_X = 0.2 * MAX_X;
+
+  var MAX_HASHTAG_LENGTH = 20;
+  var MAX_HASHTAGS_AMOUNT = 5;
+
   var uploadForm = document.querySelector('#upload-select-image');
   var fileInput = uploadForm.querySelector('#upload-file');
   var uploadOverlay = uploadForm.querySelector('.upload-overlay');
@@ -93,9 +100,6 @@
   var effectLevel = effectControls.querySelector('.upload-effect-level');
   var effectPin = effectControls.querySelector('.upload-effect-level-pin');
   var effectVal = effectControls.querySelector('.upload-effect-level-val');
-  var minX = 0;
-  var maxX = 455;
-  var defaultX = 0.2 * maxX;
 
   /**
    * Object with functions for checking which effect is chosen.
@@ -135,7 +139,7 @@
     }
     effectPin.style.left = '20%';
     effectVal.style.width = '20%';
-    setEffectIntensity(defaultX);
+    setEffectIntensity(DEFAULT_X);
   }
 
   /**
@@ -147,15 +151,15 @@
     if (effects.isNothingChosen()) {
       effectImagePreview.style.filter = 'none';
     } else if (effects.isChromeChosen()) {
-      effectImagePreview.style.filter = 'grayscale(' + currentX / maxX + ')';
+      effectImagePreview.style.filter = 'grayscale(' + currentX / MAX_X + ')';
     } else if (effects.isSepiaChosen()) {
-      effectImagePreview.style.filter = 'sepia(' + currentX / maxX + ')';
+      effectImagePreview.style.filter = 'sepia(' + currentX / MAX_X + ')';
     } else if (effects.isMarvinChosen()) {
-      effectImagePreview.style.filter = 'invert(' + currentX / maxX * 100 + '%)';
+      effectImagePreview.style.filter = 'invert(' + currentX / MAX_X * 100 + '%)';
     } else if (effects.isPhobosChosen()) {
-      effectImagePreview.style.filter = 'blur(' + currentX / maxX * 3 + 'px)';
+      effectImagePreview.style.filter = 'blur(' + currentX / MAX_X * 3 + 'px)';
     } else if (effects.isHeatChosen()) {
-      effectImagePreview.style.filter = 'brightness(' + currentX / maxX * 3 + ')';
+      effectImagePreview.style.filter = 'brightness(' + currentX / MAX_X * 3 + ')';
     }
   }
 
@@ -176,12 +180,12 @@
       startX = moveEvt.clientX;
       var offset = effectPin.offsetLeft - shiftX;
 
-      if (offset < minX) {
-        effectPin.style.left = minX + 'px';
-        effectVal.style.width = minX + 'px';
-      } else if (offset > maxX) {
-        effectPin.style.left = maxX + 'px';
-        effectVal.style.width = maxX + 'px';
+      if (offset < MIN_X) {
+        effectPin.style.left = MIN_X + 'px';
+        effectVal.style.width = MIN_X + 'px';
+      } else if (offset > MAX_X) {
+        effectPin.style.left = MAX_X + 'px';
+        effectVal.style.width = MAX_X + 'px';
       } else {
         effectPin.style.left = offset + 'px';
         effectVal.style.width = offset + 'px';
@@ -211,9 +215,6 @@
   function validateHashtag() {
     if (hashtag.value.length > 0) {
       var hashtags = hashtag.value.split(' ');
-
-      var maxHashtagLength = 20;
-      var maxAmountOfHashtags = 5;
 
       /**
        * Functions check validity of the hashtag input.
@@ -254,7 +255,7 @@
 
         isHashtagTooLong: function () {
           for (var i = 0; i < hashtags.length; i++) {
-            if (hashtags[i].length > maxHashtagLength) {
+            if (hashtags[i].length > MAX_HASHTAG_LENGTH + 1) {
               return true;
             }
           }
@@ -262,7 +263,7 @@
         },
 
         isAmountOfHashtagsTooBig: function () {
-          return hashtags.length > maxAmountOfHashtags;
+          return hashtags.length > MAX_HASHTAGS_AMOUNT;
         },
 
         isOnlyWordsUsed: function () {
@@ -271,13 +272,13 @@
       };
 
       if (hashtagInvalidities.isAmountOfHashtagsTooBig()) {
-        hashtag.setCustomValidity('The maximum amount of hashtags is ' + maxAmountOfHashtags);
+        hashtag.setCustomValidity('The maximum amount of hashtags is ' + MAX_HASHTAGS_AMOUNT);
         showError(hashtag);
       } else if (hashtagInvalidities.isHashMissing()) {
         hashtag.setCustomValidity('Each hashtag should start with #');
         showError(hashtag);
       } else if (hashtagInvalidities.isHashtagTooLong()) {
-        hashtag.setCustomValidity('Each hashtag shouldn\'t contain more than ' + maxHashtagLength + ' characters');
+        hashtag.setCustomValidity('Each hashtag shouldn\'t contain more than ' + MAX_HASHTAG_LENGTH + ' characters');
         showError(hashtag);
       } else if (hashtagInvalidities.isHashtagRepeated()) {
         hashtag.setCustomValidity('Hashtags shouldn\'t be repeated');

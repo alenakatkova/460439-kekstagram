@@ -9,6 +9,8 @@
  */
 
 (function () {
+  var MAX_TIME = 10000;
+
   window.backend = {
     load: function (onLoad, onError) {
       var request = formRequestParameters(onLoad, onError);
@@ -50,7 +52,7 @@
       errorHandler('Еhe request processing time has exceeded ' + xhr.timeout / 1000 + ' s.');
     });
 
-    xhr.timeout = 10000;
+    xhr.timeout = MAX_TIME;
 
     return xhr;
   }
