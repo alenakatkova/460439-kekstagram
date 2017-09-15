@@ -372,6 +372,14 @@
   }
 
   /**
+   * In order to prevent Firefox from auto-validating field when it looses focus:
+   */
+
+  description.addEventListener('change', function () {
+    description.style.boxShadow = 'none';
+  });
+
+  /**
    * Function sets form's values to default, and removes listeners 'input' from inputs
    * to prevent from auto-validating inputs when next picture is being uploaded
    */
