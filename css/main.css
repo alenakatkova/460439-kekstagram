@@ -421,6 +421,12 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
   color: #000;
 }
 
+.upload-form-description:invalid,
+.upload-form-description:-moz-submit-invalid,
+.upload-form-description:-moz-ui-invalid {
+  box-shadow: none;
+}
+
 /* Кнопка отправки */
 .upload-form-submit {
   padding: 0 20px;
